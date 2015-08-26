@@ -17,6 +17,7 @@ import org.apache.mahout.cf.taste.impl.model.GenericUserPreferenceArray;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
 import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
+import org.apache.mahout.cf.taste.impl.recommender.GenericBooleanPrefUserBasedRecommender;
 import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
 import org.apache.mahout.cf.taste.impl.similarity.LogLikelihoodSimilarity;
 import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
@@ -109,11 +110,12 @@ public class DataModelTest {
 		DataModel model = new GenericBooleanPrefDataModel(
 				GenericBooleanPrefDataModel.toDataMap(new FileDataModel(new File("ua.base"))));
 
+		// Should use GenericBooleanPrefUserBasedRecommender instread of GenericUserBasedRecommender
 		RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
 			public Recommender buildRecommender(DataModel model) throws TasteException {
 				UserSimilarity similarity = new LogLikelihoodSimilarity(model);
 				UserNeighborhood neighborhood = new NearestNUserNeighborhood(10, similarity, model);
-				return new GenericUserBasedRecommender(model, neighborhood, similarity);
+				return new GenericBooleanPrefUserBasedRecommender(model, neighborhood, similarity);
 			}
 		};
 
