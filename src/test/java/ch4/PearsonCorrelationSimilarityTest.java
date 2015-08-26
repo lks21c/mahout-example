@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.common.Weighting;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.eval.RecommenderEvaluator;
 import org.apache.mahout.cf.taste.impl.eval.AverageAbsoluteDifferenceRecommenderEvaluator;
@@ -22,7 +23,7 @@ import org.junit.Test;
 /**
  * Created by lks21c on 15. 8. 26.
  */
-public class CustomDataModelTest {
+public class PearsonCorrelationSimilarityTest {
 
 	@Test
 	public void NearestNUserNeighborhood_100() throws TasteException, IOException {
@@ -80,5 +81,21 @@ public class CustomDataModelTest {
         };
         double score = evaluator.evaluate(recommenderBuilder, null, model, 0.95, 0.05);
         System.out.println(score);
+    }
+
+    @Test
+    public void PearsonCorrelationSimilarity_Weighting_WEIGHTED() throws TasteException, IOException {
+        DataModel model = new GroupLensDataModel(new File("ratings.dat"));
+        RecommenderEvaluator evaluator = new AverageAbsoluteDifferenceRecommenderEvaluator();
+        RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
+            @Override
+            public Recommender buildRecommender(DataModel model) throws TasteException {
+                UserSimilarity similarity = new PearsonCorrelationSimilarity(model, Weighting.WEIGHTED);
+                UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.5, similarity, model);
+                return new GenericUserBasedRecommender(model, neighborhood, similarity);
+            }
+        };
+        double score = evaluator.evaluate(recommenderBuilder, null, model, 0.95, 0.05);
+        System.out.println(score); //0.74
     }
 }
