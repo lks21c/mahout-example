@@ -35,6 +35,6 @@ public class CosineTest {
 			}
 		};
 		double score = evaluator.evaluate(recommenderBuilder, null, model, 0.95, 0.05);
-		System.out.println(score);
+		System.out.println(score); // 0.74
 	}
 }
